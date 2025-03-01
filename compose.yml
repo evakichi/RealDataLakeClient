@@ -1,0 +1,33 @@
+services:
+  spark-client:
+    container_name: spark-client
+    hostname: spark-client
+    build: .
+#    ports:
+#      - 8083:8080
+#      - 4040:4040
+    tty: true
+#    user: root
+    volumes:
+      - ./conf/spark-defaults.conf:/opt/spark-3.5.5-bin-hadoop3-scala2.13/conf/spark-defaults.conf:ro
+      - ./data/:/home/spark/data/:ro
+      - ./py/:/home/spark/py/:ro
+    environment:
+      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+      - AWS_S3_ENDPOINT=${DOMAIN_NAME}:9000
+      - AWS_REGION=us-east-1
+      - TZ=Asia/Tokyo
+    networks:
+      spark-iceberg-client-network:
+        ipv4_address: 172.21.1.101
+    restart: always
+
+networks:
+  spark-iceberg-client-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.21.1.0/24
+        gateway: 172.21.1.1

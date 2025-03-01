@@ -1,0 +1,54 @@
+services:
+  spark:
+    container_name: spark
+    hostname: spark
+    build: .
+#    ports:
+#      - 8083:8080
+#      - 4040:4040
+    tty: true
+#    user: root
+    volumes:
+      - ./conf/spark-defaults.conf:/opt/spark-3.5.5-bin-hadoop3-scala2.13/conf/spark-defaults.conf:ro
+      - ./data/:/home/spark/data/:ro
+      - ./py/:/home/spark/py/:ro
+    environment:
+      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+      - AWS_S3_ENDPOINT=${DOMAIN_NAME}:9000
+      - AWS_REGION=us-east-1
+      - TZ=Asia/Tokyo
+    networks:
+      spark-iceberg-network:
+        ipv4_address: 172.20.4.101
+    restart: always
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    container_name: db
+    hostname: db
+    networks:
+      spark-iceberg-network:
+        ipv4_address: 172.20.4.102
+    volumes:
+      - db-store:/var/lib/postgresql/data
+    tty: true
+    restart: always
+    environment:
+      - TZ=Asia/Tokyo
+      - POSTGRES_USER=${SPARK_DB_USERNAME}
+      - POSTGRES_PASSWORD=${SPARK_DB_PASSWORD}
+      - POSTGRES_DB=${SPARK_DB_NAME}
+
+networks:
+  spark-iceberg-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.20.4.0/24
+        gateway: 172.20.4.1
+volumes:
+  db-store:

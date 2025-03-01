@@ -1,0 +1,16 @@
+spark.sql.extensions                          org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+spark.sql.defaultCatalog                      __SPARK_CATALOG_NAME__
+spark.sql.catalog.__SPARK_CATALOG_NAME__                   org.apache.iceberg.spark.SparkCatalog
+spark.sql.catalog.__SPARK_CATALOG_NAME__.type              jdbc
+spark.sql.catalog.__SPARK_CATALOG_NAME__.uri               jdbc:postgresql://__DOMAIN_NAME__:5432/__SPARK_DB_NAME__
+spark.sql.catalog.__SPARK_CATALOG_NAME__.jdbc.useSSL       false
+spark.sql.catalog.__SPARK_CATALOG_NAME__.jdbc.user         __SPARK_DB_USERNAME__
+spark.sql.catalog.__SPARK_CATALOG_NAME__.io-impl           org.apache.iceberg.aws.s3.S3FileIO
+spark.sql.catalog.__SPARK_CATALOG_NAME__.warehouse         s3://__SPARK_WAREHOUSE_NAME__
+spark.sql.catalog.__SPARK_CATALOG_NAME__.s3.endpoint       https://__DOMAIN_NAME__:9000/__SPARK_ENDPOINT_NAME__/
+spark.sql.catalog.spark_catalog               org.apache.iceberg.spark.SparkSessionCatalog
+spark.eventLog.enabled                        true
+spark.eventLog.dir                            /home/spark/spark-events
+spark.history.fs.logDirectory                 /home/spark/spark-events
+spark.sql.catalogImplementation               in-memory
+
